@@ -15,7 +15,7 @@ summary <- summarize(group_by(activity_data,date),mean = mean(steps,na.rm=TRUE),
                      median = median(steps,na.rm=TRUE),total = sum(steps,na.rm=TRUE))
 head(summary,10)
 ```
-![Image 1](figure/activity_summarised_data.png)
+![Image 1](figure/activity_summarised_data.PNG)
 
 Computed data has been stored in the variable - *summary*. Dimensions of *summary* is 61x4.
 Histogram of the total number of steps taken each day has been plotted below.
@@ -27,7 +27,7 @@ hist(as.vector(summary$total),
      breaks=10, 
      main="Histogram of Total number of Steps")
 ```
-![Image 2](figure/histogram_average_steps.png)
+![Image 2](figure/histogram_average_steps.PNG)
 
 We can consolidate the data into a new data.frame, so that we can easily plot a time-series.
 For this we will be needing spread function from tidyr package.
@@ -45,7 +45,7 @@ Now we will be averaging the number of steps for all days for each column of int
 interval_means <- colMeans(consolidated_data[,-1],na.rm=TRUE)
 plot.ts(interval_means,type='l',ylab='Average Number of Steps for all Days',xlab='interval')
 ```
-![Image 3](figure/timeSeries_average_steps.png)
+![Image 3](figure/timeSeries_average_steps.PNG)
 
 From the data it evident that the interval-835 has the highest average number of steps of all the days.
 Now total numbe rmissing values of the dataset is given by the following.
@@ -78,7 +78,7 @@ Now let us summarize the this tidy data after grouping by date and plot the hist
                       median = median(steps,na.rm=TRUE),total = sum(steps,na.rm=TRUE))
  head(summary_tidy_data,10)
 ```
-![Image 4](figure/activity_summarised_tidy_data.png)
+![Image 4](figure/activity_summarised_tidy_data.PNG)
 
 ```{r}
  hist(as.vector(summary_tidy_data$total),
@@ -87,7 +87,7 @@ Now let us summarize the this tidy data after grouping by date and plot the hist
       breaks=10, 
       main="Histogram of Total number of Steps")
 ```
-![Image 5](figure/histogram_average_steps_tidy.png)
+![Image 5](figure/histogram_average_steps_tidy.PNG)
 
 Now let us analyze the weekdays and weekends stat.
 
@@ -123,4 +123,4 @@ xyplot(steps ~ interval|levels(plotting_data$day),
        ylab="Number of Steps",
        layout=c(1,2))
 ```
-![Image 6](figure/panelPlot_timeSeries_activity_data.png)
+![Image 6](figure/panelPlot_timeSeries_activity_data.PNG)
