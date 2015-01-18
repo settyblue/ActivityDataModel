@@ -47,7 +47,7 @@ plot.ts(interval_means,type='l',ylab='Average Number of Steps for all Days',xlab
 ```
 ![Image 3](figure/timeSeries_average_steps.PNG)
 
-From the data it evident that the interval-835 has the highest average number of steps of all the days.
+From the data it evident that the **interval-835** has the highest average number of steps of all the days.
 Now total numbe rmissing values of the dataset is given by the following.
 ```{r}
 count <- 0
