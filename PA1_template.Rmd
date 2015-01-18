@@ -1,25 +1,117 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Analysis of Activity Monitering Data"
+output: html_document
 ---
 
+The Data is present on a file by name **activity.csv** in the work-area.
+The data from the file is extracted into a data.frame variable - *activity_data*.
+The dimensions of *activity_data* is 17568x3. It has three columns viz. steps, date and interval.
+In order to find mean, median and total number of steps, we would have to group the data by date column.
 
-## Loading and preprocessing the data
+```{r}
+activity_data <- read.csv("activity.csv")
+suppressMessages(library(dplyr))
+summary <- summarize(group_by(activity_data,date),mean = mean(steps,na.rm=TRUE),
+                     median = median(steps,na.rm=TRUE),total = sum(steps,na.rm=TRUE))
+head(summary,10)
+```
 
+Computed data has been stored in the variable - *summary*. Dimensions of *summary* is 61x4.
+Histogram of the total number of steps taken each day has been plotted below.
 
+```{r}
+hist(as.vector(summary$total),
+     xlab="Total Number of steps per day",
+     ylab="Number of Days",
+     breaks=10, 
+     main="Histogram of Total number of Steps")
+```
 
-## What is mean total number of steps taken per day?
+We can consolidate the data into a new data.frame, so that we can easily plot a time-series.
+For this we will be needing spread function from tidyr package.
+```{r}
+suppressMessages(library(tidyr))
+consolidated_data <- spread(activity_data,interval,steps)
+dim(consolidated_data)
+```
+The dimesion of *consolidated_data* is 61x289.
 
+Each row is a set observations for given day. So we have 61 days of observation.
+Each column represents a different interval. The column name is the interval-indetifier.
+Now we will be averaging the number of steps for all days for each column of interval and we will be plotting the the corresponding time-series of averages.
+```{r}
+interval_means <- colMeans(consolidated_data[,-1],na.rm=TRUE)
+plot.ts(interval_means,type='l',ylab='Average Number of Steps for all Days',xlab='interval')
+```
 
+From the data it evident that the interval-835 has the highest average number of steps of all the days.
+Now total numbe rmissing values of the dataset is given by the following.
+```{r}
+count <- 0
+for(i in 1:nrow(activity_data)){
+        if(is.na(activity_data[i,1])){
+                count <- count+1
+        }
+}
+count
+```
+We have 2304 null entries in our data. We can substitute these entries with the corresponding interval averages over all the given days of observation. We will create a new data-set - *activity_tidy_data* in which we replace the <NA> values with corresponding 5-min interval averages.
+```{r}
+#format(Sys.time(), "%Y-%m-%d")
+meanvalues <- round(colMeans(select(consolidated_data,-date),na.rm=TRUE),digits=6)
+consolidated_tidy_data <- consolidated_data
+for(i in 1:(nrow(consolidated_tidy_data))){
+        for(j in 2:ncol(consolidated_tidy_data)){
+                if(is.na(consolidated_tidy_data[i,j])){
+                        consolidated_tidy_data[i,j] <- meanvalues[j-1]
+                }
+        }
+}
+activity_tidy_data <- arrange(gather(consolidated_tidy_data,interval,steps,-date),date,interval)
+```
+Now let us summarize the this tidy data after grouping by date and plot the histogram of total number of steps for each day.
+```{r}
+ summary_tidy_data <- summarize(group_by(activity_tidy_data,date),mean = mean(steps,na.rm=TRUE),
+                      median = median(steps,na.rm=TRUE),total = sum(steps,na.rm=TRUE))
+ head(summary_tidy_data,10)
+ hist(as.vector(summary_tidy_data$total),
+      xlab="Total Number of steps per day",
+      ylab="Number of Days",
+      breaks=10, 
+      main="Histogram of Total number of Steps")
+```
 
-## What is the average daily activity pattern?
+Now let us analyze the weekdays and weekends stat.
 
+```{r}
+activity_tidy_data$date <- as.Date(activity_tidy_data$date, format = "%Y-%m-%d")
+activity_tidy_data <- mutate(activity_tidy_data, day="Weekday",days=weekdays(date))
+for(i in 1:(nrow(activity_tidy_data))){
+         if(activity_tidy_data[i,5]=="Sunday"||activity_tidy_data[i,5]=="Saturday"){
+                 activity_tidy_data[i,4] <- "Weekend"
+         }
+}
 
+activity_tidy_data$day <- as.factor(activity_tidy_data$day)
+filter_data1 <- select(spread(filter(select(activity_tidy_data,-days),day=="Weekday"),date,steps),-day)
+filter_data2 <- select(spread(filter(select(activity_tidy_data,-days),day=="Weekend"),date,steps),-day)
 
-## Imputing missing values
+plotting_data <- 
+arrange(
+  rbind(
+        select(mutate(filter_data1,mean=rowMeans(filter_data1[,-1]),day1="weekday"),
+               steps = mean,interval,day = day1),
+        select(mutate(filter_data2,mean=rowMeans(filter_data2[,-1]),day1="weekend"),
+               steps = mean,interval,day = day1)
+        ),
+  interval)
 
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+plotting_data$day <- as.factor(plotting_data$day)
+suppressMessages(library(lattice))
+xyplot(steps ~ interval|levels(plotting_data$day),
+       data=plotting_data,
+       type="l",
+       xlab="Interval",
+       ylab="Number of Steps",
+       layout=c(1,2))
+```
