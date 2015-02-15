@@ -42,7 +42,7 @@ hist(as.vector(summary$total),
      main="Histogram of Total number of Steps")
 ```
 
-![](test_files/figure-html/unnamed-chunk-2-1.png) 
+![](figure/histogram_average_steps.PNG) 
 
 We can consolidate the data into a new data.frame, so that we can easily plot a time-series.
 For this we will be needing spread function from tidyr package.
@@ -67,7 +67,7 @@ interval_means <- colMeans(consolidated_data[,-1],na.rm=TRUE)
 plot.ts(interval_means,type='l',ylab='Average Number of Steps for all Days',xlab='interval')
 ```
 
-![](test_files/figure-html/unnamed-chunk-4-1.png) 
+![](figure/timeSeries_average_steps.PNG) 
 
 From the data it evident that the **interval-835** has the highest average number of steps of all the days.
 Now total numbe rmissing values of the dataset is given by the following.
@@ -133,7 +133,7 @@ Now let us summarize the this tidy data after grouping by date and plot the hist
       main="Histogram of Total number of Steps")
 ```
 
-![](test_files/figure-html/unnamed-chunk-8-1.png) 
+![](figure/histogram_average_steps_tidy.PNG) 
 
 Now let us analyze the weekdays and weekends stat.
 
@@ -171,4 +171,4 @@ xyplot(steps ~ interval|levels(plotting_data$day),
        layout=c(1,2))
 ```
 
-![](test_files/figure-html/unnamed-chunk-9-1.png) 
+![](figure/panelPlot_timeSeries_activity_data.PNG) 
