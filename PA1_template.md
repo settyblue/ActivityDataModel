@@ -44,6 +44,8 @@ hist(as.vector(summary$total),
 
 ![](figure/histogram_average_steps.PNG) 
 
+The mean and median number of steps taken for each day is reported in the data-frame printed above.
+
 We can consolidate the data into a new data.frame, so that we can easily plot a time-series.
 For this we will be needing spread function from tidyr package.
 
