@@ -87,7 +87,7 @@ count
 ```
 ## [1] 2304
 ```
-We have 2304 null entries in our data. We can substitute these entries with the corresponding interval averages over all the given days of observation. We will create a new data-set - *activity_tidy_data* in which we replace the <NA> values with corresponding 5-min interval averages.
+We have 2304 null entries in our data. **We can substitute these entries with the corresponding interval averages over all the given days of observation.** We will create a new data-set - *activity_tidy_data* in which we replace the <NA> values with corresponding 5-min interval averages.
 
 ```r
 #format(Sys.time(), "%Y-%m-%d")
@@ -138,7 +138,7 @@ Now let us summarize the this tidy data after grouping by date and plot the hist
 ![](figure/histogram_average_steps_tidy.PNG) 
 
 Now let us analyze the weekdays and weekends stat.
-
+We will first identify the dates by their day, and classify them accordingly as Weekdays and Weekends. Then we will filter them and plot them in two separate panels.
 
 ```r
 activity_tidy_data$date <- as.Date(activity_tidy_data$date, format = "%Y-%m-%d")
